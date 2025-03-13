@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - STORAGE_SERVICES=http://storage1:8001,http://storage2:8002,http://storage3:8003
+      - CHECK_INTERVAL=10
+      - SERVICE_TIMEOUT=2.0
+    depends_on:
+      - storage1
+      - storage2
+      - storage3
+    networks:
+      - service-network
+
+  storage1:
+    build:
+      context: ./storage
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - PORT=8001
+    networks:
+      - service-network
+
+  storage2:
+    build:
+      context: ./storage
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      - PORT=8002
+    networks:
+      - service-network
+
+  storage3:
+    build:
+      context: ./storage
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      - PORT=8003
+    networks:
+      - service-network
+
+networks:
+  service-network:
+    driver: bridge
